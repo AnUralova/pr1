@@ -1,0 +1,5 @@
+
+// Minimal jQuery placeholder
+window.$ = window.jQuery = function(selector) {
+    return document.querySelectorAll(selector);
+};
