@@ -5,7 +5,7 @@
     <div class="container-fluid d-flex justify-content-between align-items-center">
         
         <a class="navbar-brand" href="index.jsp">
-            <img alt="Логотип" id="top-image" src="images/library.png">
+            <img src="images/library.png" style="height: 130px;">
         </a>
 
         <h2 class="text-dark m-0">Управление библиотекой</h2>

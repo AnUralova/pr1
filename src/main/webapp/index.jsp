@@ -18,8 +18,8 @@
         <div class="list-group text-center py-3 px-3 shadow-sm rounded bg-white main-block">
             <h2 class="mb-4">Функции системы</h2>
 
-            <a href="#" class="list-group-item list-group-item-action">Книги</a>
-            <a href="#" class="list-group-item list-group-item-action">Авторы</a>
+            <a href="<%= request.getContextPath() %>/book">Книги</a>
+			<a href="<%= request.getContextPath() %>/author">Авторы</a>
         </div>
 
         

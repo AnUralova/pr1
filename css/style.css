@@ -8,7 +8,10 @@ body {
 h2, h3 {
     color: #212529;
 }
-
+.logo {
+    width: 120px;   
+    height: auto;
+}
 .navbar h2 {
     margin: 0;
     font-size: 30px;
