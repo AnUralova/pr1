@@ -1,6 +1,10 @@
-package com.example.library.model;
+package domain;
 
+/**
+ * Класс для данных автора
+ */
 public class Author {
+    private Long id;
     private String fullName;
     private String phone;
     private String email;
@@ -14,6 +18,22 @@ public class Author {
         this.phone = phone;
         this.email = email;
         this.rating = rating;
+    }
+
+    public Author(Long id, String fullName, String phone, String email, double rating) {
+        this.id = id;
+        this.fullName = fullName;
+        this.phone = phone;
+        this.email = email;
+        this.rating = rating;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFullName() {
@@ -46,5 +66,16 @@ public class Author {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    @Override
+    public String toString() {
+        return "Author {" +
+                "id = " + id +
+                ", fullName = " + fullName +
+                ", phone = " + phone +
+                ", email = " + email +
+                ", rating = " + rating +
+                "}";
     }
 }
