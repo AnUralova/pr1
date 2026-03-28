@@ -10,17 +10,14 @@ public class Book {
     private String publisher;
     private int publicationYear;
     private String genre;
-
-    // Внешний ключ - ссылка на автора
     private Long idAuthor;
-
-    // Навигационное свойство - ссылка на автора
     private Author author;
 
     public Book() {
     }
 
-    public Book(String title, String binding, String publisher, int publicationYear, String genre, Author author) {
+    public Book(String title, String binding, String publisher, int publicationYear,
+                String genre, Author author) {
         this.title = title;
         this.binding = binding;
         this.publisher = publisher;
@@ -29,7 +26,8 @@ public class Book {
         this.author = author;
     }
 
-    public Book(String title, String binding, String publisher, int publicationYear, String genre, Long idAuthor, Author author) {
+    public Book(String title, String binding, String publisher, int publicationYear,
+                String genre, Long idAuthor, Author author) {
         this.title = title;
         this.binding = binding;
         this.publisher = publisher;
@@ -39,7 +37,8 @@ public class Book {
         this.author = author;
     }
 
-    public Book(Long id, String title, String binding, String publisher, int publicationYear, String genre, Long idAuthor, Author author) {
+    public Book(Long id, String title, String binding, String publisher, int publicationYear,
+                String genre, Long idAuthor, Author author) {
         this.id = id;
         this.title = title;
         this.binding = binding;
@@ -85,7 +84,6 @@ public class Book {
     public int getPublicationYear() {
         return publicationYear;
     }
-    
 
     public void setPublicationYear(int publicationYear) {
         this.publicationYear = publicationYear;
