@@ -1,7 +1,11 @@
 package controller;
 
+import dao.AuthorDbDAO;
+import dao.BookDbDAO;
+import dao.ConnectionProperty;
 import domain.Author;
 import domain.Book;
+import exception.DAOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,55 +13,43 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/book")
 public class BookServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    ConnectionProperty prop;
 
-    private static final List<Book> books = new ArrayList<>();
-
-    @Override
-    public void init() throws ServletException {
-        if (books.isEmpty()) {
-            List<Author> authors = AuthorServlet.getAuthors();
-
-            if (authors.size() >= 4) {
-                books.add(new Book(1L, "Евгений Онегин", "твёрдый", "АСТ", 2020, "роман", authors.get(0).getId(), authors.get(0)));
-                books.add(new Book(2L, "Война и мир", "мягкий", "Эксмо", 2018, "роман", authors.get(1).getId(), authors.get(1)));
-                books.add(new Book(3L, "Вишневый сад", "твёрдый", "Просвещение", 2019, "пьеса", authors.get(2).getId(), authors.get(2)));
-                books.add(new Book(4L, "Преступление и наказание", "мягкий", "Феникс", 2021, "роман", authors.get(3).getId(), authors.get(3)));
-            }
-        }
+    public BookServlet() throws IOException {
+        super();
+        prop = new ConnectionProperty();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
 
-        String action = request.getParameter("action");
-        String idStr = request.getParameter("id");
+        List<Book> books;
+        List<Author> authors;
 
-        if ("delete".equals(action) && idStr != null) {
-            Long id = Long.parseLong(idStr);
-            books.removeIf(b -> b.getId().equals(id));
-            response.sendRedirect(request.getContextPath() + "/book");
-            return;
-        }
+        BookDbDAO bookDao = new BookDbDAO();
+        AuthorDbDAO authorDao = new AuthorDbDAO();
 
-        if ("edit".equals(action) && idStr != null) {
-            Long id = Long.parseLong(idStr);
-            for (Book b : books) {
-                if (b.getId().equals(id)) {
-                    request.setAttribute("editBook", b);
-                    break;
-                }
+        try {
+            books = bookDao.findAll();
+            authors = authorDao.findAll();
+
+            for (Book book : books) {
+                book.setAuthor(authorDao.findById(book.getIdAuthor(), authors));
             }
+
+            request.setAttribute("books", books);
+            request.setAttribute("authors", authors);
+        } catch (DAOException e) {
+            e.printStackTrace();
         }
 
-        request.setAttribute("books", books);
-        request.setAttribute("authors", AuthorServlet.getAuthors());
         request.getRequestDispatcher("/views/book.jsp").forward(request, response);
     }
 
@@ -67,7 +59,9 @@ public class BookServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        String idStr = request.getParameter("id");
+        BookDbDAO dao = new BookDbDAO();
+        AuthorDbDAO authorDao = new AuthorDbDAO();
+
         String title = request.getParameter("title");
         String binding = request.getParameter("binding");
         String publisher = request.getParameter("publisher");
@@ -87,35 +81,24 @@ public class BookServlet extends HttpServlet {
         } catch (Exception ignored) {
         }
 
-        Author selectedAuthor = null;
-        if (idAuthor != null) {
-            for (Author a : AuthorServlet.getAuthors()) {
-                if (a.getId().equals(idAuthor)) {
-                    selectedAuthor = a;
-                    break;
-                }
+        Author author = null;
+        try {
+            if (idAuthor != null) {
+                author = authorDao.findById(idAuthor);
             }
+        } catch (DAOException e) {
+            e.printStackTrace();
         }
 
-        if (idStr != null && !idStr.isEmpty()) {
-            Long id = Long.parseLong(idStr);
-            for (Book b : books) {
-                if (b.getId().equals(id)) {
-                    b.setTitle(title);
-                    b.setBinding(binding);
-                    b.setPublisher(publisher);
-                    b.setPublicationYear(publicationYear);
-                    b.setGenre(genre);
-                    b.setIdAuthor(idAuthor);
-                    b.setAuthor(selectedAuthor);
-                    break;
-                }
-            }
-        } else {
-            Long newId = (long) (books.size() + 1);
-            books.add(new Book(newId, title, binding, publisher, publicationYear, genre, idAuthor, selectedAuthor));
+        Book newBook = new Book(title, binding, publisher, publicationYear, genre, idAuthor, author);
+
+        try {
+            Long index = dao.insert(newBook);
+            System.out.println("Adding book result: " + index);
+        } catch (DAOException e) {
+            e.printStackTrace();
         }
 
-        response.sendRedirect(request.getContextPath() + "/book");
+        doGet(request, response);
     }
 }
